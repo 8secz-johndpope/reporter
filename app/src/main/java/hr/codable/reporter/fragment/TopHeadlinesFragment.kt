@@ -2,6 +2,7 @@ package hr.codable.reporter.fragment
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -23,6 +24,10 @@ class TopHeadlinesFragment : Fragment() {
         val recyclerViewAdapter = RecyclerViewAdapter(ArticleList.displayTopHeadlinesList)
         recyclerView?.layoutManager = LinearLayoutManager(context)
         recyclerView?.adapter = recyclerViewAdapter
+
+        val dividerItemDecoration = DividerItemDecoration(recyclerView?.getContext(), 1)
+        recyclerView?.addItemDecoration(dividerItemDecoration)
+
         return v
     }
 

@@ -3,30 +3,32 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@android:color/white" android:hapticFeedbackEnabled="false"
+>
 
     <TextView
             android:text="@string/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/article_title_id"/>
-
-    <TextView
-            android:text="@string/timestamp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/article_publishedAt_id"/>
+            android:id="@+id/article_title_id" android:textColor="@android:color/black" android:textSize="24sp"
+            android:padding="5sp"/>
 
     <TextView
             android:text="@string/author"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/article_author_id"/>
-
+            android:id="@+id/article_author_id" android:textColor="@android:color/black" android:textSize="18sp"
+            android:padding="5sp"/>
     <TextView
             android:text="@string/source"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/article_source_id"/>
+            android:id="@+id/article_source_id" android:textColor="@android:color/black" android:padding="5sp"/>
+    <TextView
+            android:text="@string/timestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/article_publishedAt_id" android:padding="5sp" android:textColor="@android:color/black"/>
 
 </LinearLayout>
