@@ -1,17 +1,21 @@
 package hr.codable.reporter
+
+import android.os.AsyncTask
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.widget.SearchView
 import hr.codable.reporter.adapter.ViewPagerAdapter
+import hr.codable.reporter.entity.Article
+import hr.codable.reporter.entity.ArticleList
 import hr.codable.reporter.fragment.EverythingFragment
 import hr.codable.reporter.fragment.TopHeadlinesFragment
+import hr.codable.reporter.rest.RestFactory
 
 class MainActivity : AppCompatActivity() {
-
-//    private val API_KEY = "fa2b4e8e826d4f578e36848a1e43c2b7"
 
     private var tabLayout: TabLayout? = null
     private var viewPager: ViewPager? = null
@@ -32,8 +36,8 @@ class MainActivity : AppCompatActivity() {
         viewPager?.adapter = viewPagerAdapter
         tabLayout?.setupWithViewPager(viewPager)
 
-
-//        LoadTopHeadlinesTask().execute()
+        LoadTopHeadlinesTask().execute()
+        LoadEverythingTask().execute()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -55,29 +59,39 @@ class MainActivity : AppCompatActivity() {
 
         return super.onCreateOptionsMenu(menu)
     }
+
+    private inner class LoadTopHeadlinesTask : AsyncTask<Void, Void, List<Article>?>() {
+
+        override fun doInBackground(vararg params: Void?): List<Article>? {
+
+            val service = RestFactory.instance
+
+            return service.getTopHeadlines("us")
+        }
+
+        override fun onPostExecute(result: List<Article>?) {
+
+            ArticleList.displayTopHeadlinesList.addAll(result as Collection<Article>)
+            val recyclerView = findViewById<RecyclerView>(R.id.top_headlines_recyclerView)
+            recyclerView.adapter?.notifyDataSetChanged()
+        }
+
+    }
+
+    private inner class LoadEverythingTask : AsyncTask<Void, Void, List<Article>?>() {
+
+        override fun doInBackground(vararg params: Void?): List<Article>? {
+
+            val service = RestFactory.instance
+
+            return service.getEverything("tech")
+        }
+
+        override fun onPostExecute(result: List<Article>?) {
+
+            ArticleList.displayEverythingList.addAll(result as Collection<Article>)
+            val recyclerView = findViewById<RecyclerView>(R.id.everything_recyclerView)
+            recyclerView.adapter?.notifyDataSetChanged()
+        }
+    }
 }
-
-
-//    private inner class LoadTopHeadlinesTask : AsyncTask<Void, Void, List<Article>?>(){
-//
-//        var articles: List<Article>? = null
-//
-//        override fun doInBackground(vararg params: Void?): List<Article>? {
-//
-//            val service = RestFactory.instance
-//
-//            return service.getTopHeadlines("techcrunch", API_KEY);
-//        }
-//
-//        override fun onPostExecute(result: List<Article>?) {
-//
-//            authorTextView.text = result?.get(0)?.author
-//            titleTextView.text = result?.get(0)?.title
-//            descriptiontextView.text = result?.get(0)?.description
-//            urlTextView.text = result?.get(0)?.url
-//            publishedAtTextView.text = result?.get(0)?.publishedAt
-//            contentTextView.text = result?.get(0)?.content
-//        }
-//
-//    }
-//}

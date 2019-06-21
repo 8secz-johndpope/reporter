@@ -1,6 +1,6 @@
 package hr.codable.reporter.entity
 
-data class SourceModel(
+data class Source(
     val id: String,
     val name: String
 )

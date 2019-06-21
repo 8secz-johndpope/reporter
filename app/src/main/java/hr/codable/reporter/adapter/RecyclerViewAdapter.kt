@@ -30,8 +30,7 @@ class RecyclerViewAdapter constructor(private val displayArticle: List<Article>)
         parent.articleAuthorTextView.text = displayArticle.get(position).author
         parent.articlePublishedAtTextView.text = displayArticle.get(position).publishedAt
         parent.articleTitleTextView.text = displayArticle.get(position).title
-        parent.articleSourceTextView.text = displayArticle.get(position).source.toString()
-
+        parent.articleSourceTextView.text = displayArticle.get(position).source.name
     }
 
     class ViewHolder(itemView: View, context: Context) : RecyclerView.ViewHolder(itemView) {

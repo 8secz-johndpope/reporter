@@ -4,4 +4,8 @@
     <string name="search_in_everything">Search in everything</string>
     <string name="top_headlines">Top Headlines</string>
     <string name="everything">Everything</string>
+    <string name="title">title</string>
+    <string name="timestamp">timestamp</string>
+    <string name="author">author</string>
+    <string name="source">source</string>
 </resources>

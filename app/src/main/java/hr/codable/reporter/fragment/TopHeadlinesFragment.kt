@@ -9,13 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import hr.codable.reporter.R
 import hr.codable.reporter.adapter.RecyclerViewAdapter
-import hr.codable.reporter.entity.Article
 import hr.codable.reporter.entity.ArticleList
 
 class TopHeadlinesFragment : Fragment() {
 
     var v: View? = null
-    private var recyclerView: RecyclerView? = null
+    var recyclerView: RecyclerView? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
@@ -27,14 +26,4 @@ class TopHeadlinesFragment : Fragment() {
         return v
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        ArticleList.displayTopHeadlinesList.add(
-            Article(
-                "izvor", "autor", "naslov",
-                "opis", "juarel", "url na sliku", "3.7.2019.", "sadrzaj"
-            )
-        )
-    }
 }

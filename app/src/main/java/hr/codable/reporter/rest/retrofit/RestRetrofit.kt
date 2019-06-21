@@ -1,11 +1,9 @@
 package hr.codable.reporter.rest.retrofit
 
 import hr.codable.reporter.entity.Article
-import hr.codable.reporter.entity.ResponseModel
 import hr.codable.reporter.rest.RestInterface
 import retrofit.RestAdapter
 import retrofit.android.AndroidLog
-import retrofit.http.Query
 
 
 class RestRetrofit : RestInterface {
@@ -24,8 +22,13 @@ class RestRetrofit : RestInterface {
         service = retrofit.create(ReporterService::class.java)
     }
 
-    override fun getTopHeadlines(source: String, apiKey: String): List<Article> {
+    override fun getTopHeadlines(country: String): List<Article> {
 
-        return service.response.articles
+        return service.getTopHeadlines(country).articles
+    }
+
+    override fun getEverything(keyword: String): List<Article> {
+
+        return service.getEverything(keyword).articles
     }
 }
