@@ -1,6 +1,9 @@
 package hr.codable.reporter.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
+import android.support.annotation.RequiresApi
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +12,8 @@ import android.widget.TextView
 import android.widget.Toast
 import hr.codable.reporter.R
 import hr.codable.reporter.entity.Article
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class RecyclerViewAdapter constructor(private val displayArticle: List<Article>) :
     RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>() {
@@ -25,10 +30,20 @@ class RecyclerViewAdapter constructor(private val displayArticle: List<Article>)
         return displayArticle.size
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(parent: ViewHolder, position: Int) {
 
-        parent.articleAuthorTextView.text = displayArticle.get(position).author
-        parent.articlePublishedAtTextView.text = displayArticle.get(position).publishedAt
+        if (displayArticle.get(position).author.isNullOrBlank()) {
+            parent.articleAuthorTextView.text = "Author unknown"
+        } else {
+            parent.articleAuthorTextView.text = displayArticle.get(position).author
+        }
+        val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+        parent.articlePublishedAtTextView.text = LocalDate.parse(
+            displayArticle.get(position)
+                .publishedAt.substring(0, 10)
+        ).format(formatter).toString()
         parent.articleTitleTextView.text = displayArticle.get(position).title
         parent.articleSourceTextView.text = displayArticle.get(position).source.name
     }

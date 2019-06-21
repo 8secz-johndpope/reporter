@@ -8,4 +8,5 @@
     <string name="timestamp">timestamp</string>
     <string name="author">author</string>
     <string name="source">source</string>
+    <string name="author_unknown">Author unknown</string>
 </resources>

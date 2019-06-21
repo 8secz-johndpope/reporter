@@ -19,6 +19,7 @@ import hr.codable.reporter.fragment.TopHeadlinesFragment
 import hr.codable.reporter.rest.RestFactory
 import java.net.URLEncoder
 
+
 class MainActivity : AppCompatActivity() {
 
     private var tabLayout: TabLayout? = null
