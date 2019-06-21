@@ -1,7 +1,7 @@
 package hr.codable.reporter.entity
 
 data class Article(
-    var source: Any,
+    var source: Source,
     var author: String,
     var title: String,
     var description: String,

@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import hr.codable.reporter.R
 import hr.codable.reporter.adapter.RecyclerViewAdapter
-import hr.codable.reporter.entity.Article
 import hr.codable.reporter.entity.ArticleList
 
 class EverythingFragment : Fragment() {
@@ -26,16 +25,5 @@ class EverythingFragment : Fragment() {
         recyclerView?.layoutManager = LinearLayoutManager(context)
         recyclerView?.adapter = recyclerViewAdapter
         return v
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        ArticleList.displayEverythingList.add(
-            Article(
-                "sors", "kreativac", "tajtl",
-                "deskripsn", "juarel", "url na sliku", "20.20.1082.", "kontetn"
-            )
-        )
     }
 }
