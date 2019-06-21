@@ -61,14 +61,22 @@ class MainActivity : AppCompatActivity() {
 
                 if (newText.isNotBlank()) {
 
-                    ArticleList.displayEverythingList.removeIf {
-                        !(it.title.contains(newText) || it.description.contains(newText))
-                        // TODO fix this search algorithm
+                    ArticleList.displayEverythingList.clear()
+                    for (article in ArticleList.everythingList) {
+                        if (article.title.contains(newText, true)
+                            || article.description.contains(newText, true)
+                            || article.source.name.contains(newText, true)
+                            || article.author.contains(newText, true)
+                        ) {
+
+                            ArticleList.displayEverythingList.add(article)
+                        }
                     }
                     val recyclerView = findViewById<RecyclerView>(R.id.everything_recyclerView)
                     recyclerView.adapter?.notifyDataSetChanged()
                     return true
                 } else {
+                    ArticleList.displayEverythingList.clear()
                     ArticleList.displayEverythingList.addAll(ArticleList.everythingList)
                 }
 
