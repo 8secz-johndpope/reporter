@@ -9,4 +9,5 @@
     <string name="author">author</string>
     <string name="source">source</string>
     <string name="author_unknown">Author unknown</string>
+    <string name="retrofit_error_exception_toast">Unable to fetch articles - check your Internet connection</string>
 </resources>

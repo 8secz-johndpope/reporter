@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import hr.codable.reporter.R
 import hr.codable.reporter.adapter.RecyclerViewAdapter
 import hr.codable.reporter.entity.Article
@@ -56,22 +57,36 @@ class TopHeadlinesFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
             val service = RestFactory.instance
 
-            return service.getTopHeadlines("us")
+            var list: List<Article> = emptyList()
+            try {
+                list = service.getTopHeadlines("us")
+            } finally {
+                return list
+            }
         }
 
         override fun onPostExecute(result: List<Article>?) {
 
-            // save new data
-            ArticleList.topHeadlinesList.addAll(result as Collection<Article>)
-            val set: MutableSet<Article> = mutableSetOf()
-            // put the data in a set to filter out duplicates
-            set.addAll(ArticleList.topHeadlinesList)
-            ArticleList.topHeadlinesList.clear()
-            ArticleList.topHeadlinesList.addAll(set)
+            if (result.isNullOrEmpty()) {
+                Toast.makeText(
+                    topHeadlinesFragment.context,
+                    topHeadlinesFragment.getString(R.string.retrofit_error_exception_toast),
+                    Toast.LENGTH_LONG
+                ).show()
+            } else {
+                // save new data
+                ArticleList.topHeadlinesList.addAll(result as Collection<Article>)
+                val set: MutableSet<Article> = mutableSetOf()
+                // put the data in a set to filter out duplicates
+                set.addAll(ArticleList.topHeadlinesList)
+                ArticleList.topHeadlinesList.clear()
+                ArticleList.topHeadlinesList.addAll(set)
 
-            ArticleList.displayTopHeadlinesList.addAll(ArticleList.topHeadlinesList)
+                ArticleList.displayTopHeadlinesList.addAll(ArticleList.topHeadlinesList)
 
-            topHeadlinesFragment.recyclerView?.adapter?.notifyDataSetChanged()
+                topHeadlinesFragment.recyclerView?.adapter?.notifyDataSetChanged()
+            }
+
             topHeadlinesFragment.swipeRefreshLayout?.isRefreshing = false
         }
 

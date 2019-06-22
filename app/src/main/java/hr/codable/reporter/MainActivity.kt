@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.Menu
 import android.widget.SearchView
+import android.widget.Toast
 import hr.codable.reporter.adapter.ViewPagerAdapter
 import hr.codable.reporter.entity.Article
 import hr.codable.reporter.entity.ArticleList
@@ -99,17 +100,32 @@ class MainActivity : AppCompatActivity() {
 
             val service = RestFactory.instance
 
-            return service.getEverything(URLEncoder.encode(params[0], "utf-8"))
+            var list: List<Article> = emptyList()
+            try {
+                list = service.getEverything(URLEncoder.encode(params[0], "utf-8"))
+            } finally {
+                return list
+            }
         }
 
         override fun onPostExecute(result: List<Article>?) {
 
-            ArticleList.displayEverythingList.clear()
-            ArticleList.displayEverythingList.addAll(result as Collection<Article>)
+            if (result.isNullOrEmpty()) {
+                Toast.makeText(
+                    applicationContext,
+                    applicationContext.getString(R.string.retrofit_error_exception_toast),
+                    Toast.LENGTH_LONG
+                ).show()
+            } else {
+                ArticleList.everythingList.addAll(result as Collection<Article>)
+                ArticleList.displayEverythingList.clear()
+                ArticleList.displayEverythingList.addAll(result as Collection<Article>)
 
-            val recyclerView = findViewById<RecyclerView>(R.id.everything_recyclerView)
+                val recyclerView = findViewById<RecyclerView>(R.id.everything_recyclerView)
+                recyclerView.adapter?.notifyDataSetChanged()
+            }
+
             val swipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.everything_swipeRefreshLayout)
-            recyclerView.adapter?.notifyDataSetChanged()
             swipeRefreshLayout.isRefreshing = false
 
             Log.d("Reporter", "Done searching")

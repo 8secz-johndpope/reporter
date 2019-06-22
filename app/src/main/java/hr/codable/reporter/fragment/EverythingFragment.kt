@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import hr.codable.reporter.R
 import hr.codable.reporter.adapter.RecyclerViewAdapter
 import hr.codable.reporter.entity.Article
@@ -56,22 +57,35 @@ class EverythingFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
             val service = RestFactory.instance
 
-            return service.getEverything(URLEncoder.encode(params[0], "utf-8"))
+            var list: List<Article> = emptyList()
+            try {
+                list = service.getEverything(URLEncoder.encode(params[0], "utf-8"))
+            } finally {
+                return list
+            }
         }
 
         override fun onPostExecute(result: List<Article>?) {
 
-            // save new data
-            ArticleList.everythingList.addAll(result as Collection<Article>)
-            val set: MutableSet<Article> = mutableSetOf()
-            // put the data in a set to filter out duplicates
-            set.addAll(ArticleList.everythingList)
-            ArticleList.everythingList.clear()
-            ArticleList.everythingList.addAll(set)
+            if (result.isNullOrEmpty()) {
+                Toast.makeText(
+                    everythingFragment.context,
+                    everythingFragment.getString(R.string.retrofit_error_exception_toast),
+                    Toast.LENGTH_LONG
+                ).show()
+            } else {
+                // save new data
+                ArticleList.everythingList.addAll(result as Collection<Article>)
+                val set: MutableSet<Article> = mutableSetOf()
+                // put the data in a set to filter out duplicates
+                set.addAll(ArticleList.everythingList)
+                ArticleList.everythingList.clear()
+                ArticleList.everythingList.addAll(set)
 
-            ArticleList.displayEverythingList.addAll(ArticleList.everythingList)
+                ArticleList.displayEverythingList.addAll(ArticleList.everythingList)
+                everythingFragment.recyclerView?.adapter?.notifyDataSetChanged()
+            }
 
-            everythingFragment.recyclerView?.adapter?.notifyDataSetChanged()
             everythingFragment.swipeRefreshLayout?.isRefreshing = false
         }
     }
