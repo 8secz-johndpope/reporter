@@ -1,11 +1,10 @@
 package hr.codable.reporter
 
 import android.os.AsyncTask
-import android.os.Build
 import android.os.Bundle
-import android.support.annotation.RequiresApi
 import android.support.design.widget.TabLayout
 import android.support.v4.view.ViewPager
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -40,9 +39,6 @@ class MainActivity : AppCompatActivity() {
 
         viewPager?.adapter = viewPagerAdapter
         tabLayout?.setupWithViewPager(viewPager)
-
-        LoadTopHeadlinesTask().execute()
-        LoadEverythingTask().execute()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -53,7 +49,6 @@ class MainActivity : AppCompatActivity() {
         searchView?.queryHint = getString(R.string.search_in_everything)
         searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
 
-            @RequiresApi(Build.VERSION_CODES.N)
             override fun onQueryTextChange(newText: String): Boolean {
 
                 val tabLayout = findViewById<TabLayout>(R.id.tabLayout_id)
@@ -86,11 +81,8 @@ class MainActivity : AppCompatActivity() {
             override fun onQueryTextSubmit(query: String): Boolean {
 
                 if (query.isNotBlank()) {
-                    SearchInEverythingTask().execute(query)
 
-                    val tabLayout = findViewById<TabLayout>(R.id.tabLayout_id)
-                    tabLayout.getTabAt(1)?.select()
-
+                    searchInEverything(query)
                     return true
                 }
 
@@ -99,45 +91,6 @@ class MainActivity : AppCompatActivity() {
         })
 
         return super.onCreateOptionsMenu(menu)
-    }
-
-    private inner class LoadTopHeadlinesTask : AsyncTask<Void, Void, List<Article>?>() {
-
-        override fun doInBackground(vararg params: Void?): List<Article>? {
-
-            val service = RestFactory.instance
-
-            return service.getTopHeadlines("us")
-        }
-
-        override fun onPostExecute(result: List<Article>?) {
-
-            ArticleList.topHeadlinesList.addAll(result as Collection<Article>)
-            ArticleList.displayTopHeadlinesList.addAll(ArticleList.topHeadlinesList)
-
-            val recyclerView = findViewById<RecyclerView>(R.id.top_headlines_recyclerView)
-            recyclerView.adapter?.notifyDataSetChanged()
-        }
-
-    }
-
-    private inner class LoadEverythingTask : AsyncTask<Void, Void, List<Article>?>() {
-
-        override fun doInBackground(vararg params: Void?): List<Article>? {
-
-            val service = RestFactory.instance
-
-            return service.getEverything("tech")
-        }
-
-        override fun onPostExecute(result: List<Article>?) {
-
-            ArticleList.everythingList.addAll(result as Collection<Article>)
-            ArticleList.displayEverythingList.addAll(ArticleList.everythingList)
-
-            val recyclerView = findViewById<RecyclerView>(R.id.everything_recyclerView)
-            recyclerView.adapter?.notifyDataSetChanged()
-        }
     }
 
     private inner class SearchInEverythingTask : AsyncTask<String, Void, List<Article>>() {
@@ -155,10 +108,22 @@ class MainActivity : AppCompatActivity() {
             ArticleList.displayEverythingList.addAll(result as Collection<Article>)
 
             val recyclerView = findViewById<RecyclerView>(R.id.everything_recyclerView)
+            val swipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.everything_swipeRefreshLayout)
             recyclerView.adapter?.notifyDataSetChanged()
+            swipeRefreshLayout.isRefreshing = false
 
             Log.d("Reporter", "Done searching")
 
         }
+    }
+
+    private fun searchInEverything(query: String) {
+
+        val swipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.everything_swipeRefreshLayout)
+        swipeRefreshLayout.isRefreshing = true
+
+        SearchInEverythingTask().execute(query)
+        val tabLayout = findViewById<TabLayout>(R.id.tabLayout_id)
+        tabLayout.getTabAt(1)?.select()
     }
 }
