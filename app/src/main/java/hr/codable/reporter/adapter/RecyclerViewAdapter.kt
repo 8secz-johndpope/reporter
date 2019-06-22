@@ -1,6 +1,7 @@
 package hr.codable.reporter.adapter
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -12,11 +13,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import hr.codable.reporter.R
 import hr.codable.reporter.entity.Article
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+
 
 class RecyclerViewAdapter constructor(private val displayArticle: List<Article>) :
     RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>() {
@@ -64,7 +65,10 @@ class RecyclerViewAdapter constructor(private val displayArticle: List<Article>)
 
             itemView.setOnClickListener {
 
-                Toast.makeText(context, "Clicked on ${articleTitleTextView.text}", Toast.LENGTH_SHORT).show()
+                val alertDialog = AlertDialog.Builder(context).create()
+                alertDialog.setTitle(articles[adapterPosition].title)
+                alertDialog.setMessage(articles[adapterPosition].description)
+                alertDialog.show()
             }
 
             itemView.setOnLongClickListener {
