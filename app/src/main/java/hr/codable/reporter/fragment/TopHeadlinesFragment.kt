@@ -16,6 +16,7 @@ import hr.codable.reporter.adapter.RecyclerViewAdapter
 import hr.codable.reporter.entity.Article
 import hr.codable.reporter.entity.ArticleList
 import hr.codable.reporter.rest.RestFactory
+import java.lang.ref.WeakReference
 
 class TopHeadlinesFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
@@ -25,18 +26,14 @@ class TopHeadlinesFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         Log.d("Reporter", "Refresh top headlines")
     }
 
-    private var v: View? = null
-    private var recyclerView: RecyclerView? = null
-    private var swipeRefreshLayout: SwipeRefreshLayout? = null
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        v = inflater.inflate(R.layout.top_headlines_fragment, container, false)
+        val v = inflater.inflate(R.layout.top_headlines_fragment, container, false)
 
-        swipeRefreshLayout = v?.findViewById(R.id.top_headlines_swipeRefreshLayout)
+        val swipeRefreshLayout = v?.findViewById<SwipeRefreshLayout>(R.id.top_headlines_swipeRefreshLayout)
         swipeRefreshLayout?.setOnRefreshListener(this)
 
-        recyclerView = v?.findViewById(R.id.top_headlines_recyclerView)
+        val recyclerView = v?.findViewById<RecyclerView>(R.id.top_headlines_recyclerView)
         val recyclerViewAdapter = RecyclerViewAdapter(ArticleList.displayTopHeadlinesList)
         recyclerView?.layoutManager = LinearLayoutManager(context)
         recyclerView?.adapter = recyclerViewAdapter
@@ -74,8 +71,10 @@ class TopHeadlinesFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         return v
     }
 
-    private class LoadTopHeadlinesTask(private val topHeadlinesFragment: TopHeadlinesFragment) :
+    private class LoadTopHeadlinesTask(fragment: TopHeadlinesFragment) :
         AsyncTask<String, Void, List<Article>?>() {
+
+        private val reference: WeakReference<TopHeadlinesFragment> = WeakReference(fragment)
 
         override fun doInBackground(vararg params: String): List<Article>? {
 
@@ -91,10 +90,12 @@ class TopHeadlinesFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
         override fun onPostExecute(result: List<Article>?) {
 
+            val fragmentReference = reference.get()
+
             if (result.isNullOrEmpty()) {
                 Toast.makeText(
-                    topHeadlinesFragment.context,
-                    topHeadlinesFragment.getString(R.string.retrofit_error_exception_toast),
+                    fragmentReference?.context,
+                    fragmentReference?.getString(R.string.retrofit_error_exception_toast),
                     Toast.LENGTH_LONG
                 ).show()
             } else {
@@ -109,20 +110,23 @@ class TopHeadlinesFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                 ArticleList.displayTopHeadlinesList.clear()
                 ArticleList.displayTopHeadlinesList.addAll(ArticleList.topHeadlinesList)
 
-                topHeadlinesFragment.recyclerView?.adapter?.notifyDataSetChanged()
+                val recyclerView = fragmentReference?.view?.findViewById<RecyclerView>(R.id.top_headlines_recyclerView)
+                recyclerView?.adapter?.notifyDataSetChanged()
             }
 
-            topHeadlinesFragment.swipeRefreshLayout?.isRefreshing = false
+            val swipeRefreshLayout =
+                fragmentReference?.view?.findViewById<SwipeRefreshLayout>(R.id.top_headlines_swipeRefreshLayout)
+            swipeRefreshLayout?.isRefreshing = false
         }
 
     }
 
     private fun loadTopHeadlines(loadMore: Boolean) {
 
+        val swipeRefreshLayout = view?.findViewById<SwipeRefreshLayout>(R.id.top_headlines_swipeRefreshLayout)
         swipeRefreshLayout?.isRefreshing = true
 
-        val page: String
-        page = if (loadMore) {
+        val page: String = if (loadMore) {
             (ArticleList.topHeadlinesList.size / 20 + 1).toString()
         } else {
             "1"

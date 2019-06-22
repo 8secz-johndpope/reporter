@@ -16,6 +16,7 @@ import hr.codable.reporter.adapter.RecyclerViewAdapter
 import hr.codable.reporter.entity.Article
 import hr.codable.reporter.entity.ArticleList
 import hr.codable.reporter.rest.RestFactory
+import java.lang.ref.WeakReference
 import java.net.URLEncoder
 
 class EverythingFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
@@ -26,18 +27,14 @@ class EverythingFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         Log.d("Reporter", "Refresh everything")
     }
 
-    private var v: View? = null
-    private var recyclerView: RecyclerView? = null
-    private var swipeRefreshLayout: SwipeRefreshLayout? = null
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        v = inflater.inflate(R.layout.everything_fragment, container, false)
+        val v = inflater.inflate(R.layout.everything_fragment, container, false)
 
-        swipeRefreshLayout = v?.findViewById(R.id.everything_swipeRefreshLayout)
+        val swipeRefreshLayout = v?.findViewById<SwipeRefreshLayout>(R.id.everything_swipeRefreshLayout)
         swipeRefreshLayout?.setOnRefreshListener(this)
 
-        recyclerView = v?.findViewById(R.id.everything_recyclerView)
+        val recyclerView = v?.findViewById<RecyclerView>(R.id.everything_recyclerView)
         val recyclerViewAdapter = RecyclerViewAdapter(ArticleList.displayEverythingList)
         recyclerView?.layoutManager = LinearLayoutManager(context)
         recyclerView?.adapter = recyclerViewAdapter
@@ -74,8 +71,10 @@ class EverythingFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         return v
     }
 
-    private class LoadEverythingTask(private val everythingFragment: EverythingFragment) :
+    private class LoadEverythingTask(fragment: EverythingFragment) :
         AsyncTask<String, Void, List<Article>?>() {
+
+        private val reference = WeakReference(fragment)
 
         override fun doInBackground(vararg params: String): List<Article>? {
 
@@ -91,10 +90,11 @@ class EverythingFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
         override fun onPostExecute(result: List<Article>?) {
 
+            val fragmentReference = reference.get()
             if (result.isNullOrEmpty()) {
                 Toast.makeText(
-                    everythingFragment.context,
-                    everythingFragment.getString(R.string.retrofit_error_exception_toast),
+                    fragmentReference?.context,
+                    fragmentReference?.getString(R.string.retrofit_error_exception_toast),
                     Toast.LENGTH_LONG
                 ).show()
             } else {
@@ -108,18 +108,23 @@ class EverythingFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
                 ArticleList.displayEverythingList.clear()
                 ArticleList.displayEverythingList.addAll(ArticleList.everythingList)
-                everythingFragment.recyclerView?.adapter?.notifyDataSetChanged()
+
+                val recyclerView = fragmentReference?.view?.findViewById<RecyclerView>(R.id.everything_recyclerView)
+                recyclerView?.adapter?.notifyDataSetChanged()
             }
 
-            everythingFragment.swipeRefreshLayout?.isRefreshing = false
+            val swipeRefreshLayout =
+                fragmentReference?.view?.findViewById<SwipeRefreshLayout>(R.id.everything_swipeRefreshLayout)
+            swipeRefreshLayout?.isRefreshing = false
         }
     }
 
     private fun loadEverything(loadMore: Boolean) {
 
+        val swipeRefreshLayout = view?.findViewById<SwipeRefreshLayout>(R.id.everything_swipeRefreshLayout)
         swipeRefreshLayout?.isRefreshing = true
-        val page: String
-        page = if (loadMore) {
+
+        val page: String = if (loadMore) {
             (ArticleList.everythingList.size / 20 + 1).toString()
         } else {
             "1"
