@@ -2,8 +2,11 @@ package hr.codable.reporter.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.support.annotation.RequiresApi
+import android.support.v4.content.ContextCompat.startActivity
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -23,7 +26,7 @@ class RecyclerViewAdapter constructor(private val displayArticle: List<Article>)
         val context = parent.context
         val inflater = LayoutInflater.from(context)
         val articleItem = inflater.inflate(R.layout.article_item, parent, false)
-        return ViewHolder(articleItem, context)
+        return ViewHolder(articleItem, context, displayArticle)
     }
 
     override fun getItemCount(): Int {
@@ -34,21 +37,23 @@ class RecyclerViewAdapter constructor(private val displayArticle: List<Article>)
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(parent: ViewHolder, position: Int) {
 
-        if (displayArticle.get(position).author.isNullOrBlank()) {
+        // to suppress warning
+        val author: String? = displayArticle[position].author
+        if (author.isNullOrBlank()) {
             parent.articleAuthorTextView.text = "Author unknown"
         } else {
             parent.articleAuthorTextView.text = displayArticle.get(position).author
         }
         val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
         parent.articlePublishedAtTextView.text = LocalDate.parse(
-            displayArticle.get(position)
+            displayArticle[position]
                 .publishedAt.substring(0, 10)
         ).format(formatter).toString()
-        parent.articleTitleTextView.text = displayArticle.get(position).title
-        parent.articleSourceTextView.text = displayArticle.get(position).source.name
+        parent.articleTitleTextView.text = displayArticle[position].title
+        parent.articleSourceTextView.text = displayArticle[position].source.name
     }
 
-    class ViewHolder(itemView: View, context: Context) : RecyclerView.ViewHolder(itemView) {
+    class ViewHolder(itemView: View, context: Context, articles: List<Article>) : RecyclerView.ViewHolder(itemView) {
 
         val articleTitleTextView: TextView = itemView.findViewById(R.id.article_title_id)
         val articlePublishedAtTextView: TextView = itemView.findViewById(R.id.article_publishedAt_id)
@@ -60,6 +65,15 @@ class RecyclerViewAdapter constructor(private val displayArticle: List<Article>)
             itemView.setOnClickListener {
 
                 Toast.makeText(context, "Clicked on ${articleTitleTextView.text}", Toast.LENGTH_SHORT).show()
+            }
+
+            itemView.setOnLongClickListener {
+
+                val url = Uri.parse(articles[adapterPosition].url)
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.data = url
+                startActivity(context, intent, null)
+                true
             }
         }
 
