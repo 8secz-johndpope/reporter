@@ -21,7 +21,7 @@ class TopHeadlinesFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onRefresh() {
 
-        loadTopHeadlines()
+        loadTopHeadlines(false)
         Log.d("Reporter", "Refresh top headlines")
     }
 
@@ -44,22 +44,46 @@ class TopHeadlinesFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         // when the fragment is created, fetch data from server
         swipeRefreshLayout?.post {
 
-            loadTopHeadlines()
+            loadTopHeadlines(false)
         }
+
+        var loading = true
+        var pastVisiblesItems: Int
+        var visibleItemCount: Int
+        var totalItemCount: Int
+
+        // TODO fix this - it only works once
+        recyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (dy > 0) {
+                    visibleItemCount = recyclerView.layoutManager!!.childCount
+                    totalItemCount = recyclerView.layoutManager!!.itemCount
+                    pastVisiblesItems =
+                        (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+                    if (loading) {
+                        if (visibleItemCount + pastVisiblesItems >= totalItemCount) {
+                            loading = false
+                            Toast.makeText(context, "Reached the end", Toast.LENGTH_SHORT).show()
+                            loadTopHeadlines(true)
+                        }
+                    }
+                }
+            }
+        })
 
         return v
     }
 
     private class LoadTopHeadlinesTask(private val topHeadlinesFragment: TopHeadlinesFragment) :
-        AsyncTask<Void, Void, List<Article>?>() {
+        AsyncTask<String, Void, List<Article>?>() {
 
-        override fun doInBackground(vararg params: Void?): List<Article>? {
+        override fun doInBackground(vararg params: String): List<Article>? {
 
             val service = RestFactory.instance
 
             var list: List<Article> = emptyList()
             try {
-                list = service.getTopHeadlines("us")
+                list = service.getTopHeadlines(params[0], params[1].toInt())
             } finally {
                 return list
             }
@@ -75,13 +99,14 @@ class TopHeadlinesFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                 ).show()
             } else {
                 // save new data
-                ArticleList.topHeadlinesList.addAll(result as Collection<Article>)
+                ArticleList.topHeadlinesList.addAll(result)
                 val set: MutableSet<Article> = mutableSetOf()
                 // put the data in a set to filter out duplicates
                 set.addAll(ArticleList.topHeadlinesList)
                 ArticleList.topHeadlinesList.clear()
                 ArticleList.topHeadlinesList.addAll(set)
 
+                ArticleList.displayTopHeadlinesList.clear()
                 ArticleList.displayTopHeadlinesList.addAll(ArticleList.topHeadlinesList)
 
                 topHeadlinesFragment.recyclerView?.adapter?.notifyDataSetChanged()
@@ -92,10 +117,18 @@ class TopHeadlinesFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
     }
 
-    private fun loadTopHeadlines() {
+    private fun loadTopHeadlines(loadMore: Boolean) {
 
         swipeRefreshLayout?.isRefreshing = true
-        LoadTopHeadlinesTask(this).execute()
+
+        val page: String
+        page = if (loadMore) {
+            (ArticleList.topHeadlinesList.size / 20 + 1).toString()
+        } else {
+            "1"
+        }
+
+        LoadTopHeadlinesTask(this).execute("en", page)
     }
 
 }

@@ -22,7 +22,7 @@ class EverythingFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onRefresh() {
 
-        loadEverything("tech")
+        loadEverything(false)
         Log.d("Reporter", "Refresh everything")
     }
 
@@ -44,8 +44,32 @@ class EverythingFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
         // when the fragment is created, fetch data from server
         swipeRefreshLayout?.post {
-            loadEverything("tech")
+            loadEverything(false)
         }
+
+        var loading = true
+        var pastVisiblesItems: Int
+        var visibleItemCount: Int
+        var totalItemCount: Int
+
+        // TODO fix this - it only works once
+        recyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (dy > 0) {
+                    visibleItemCount = recyclerView.layoutManager!!.childCount
+                    totalItemCount = recyclerView.layoutManager!!.itemCount
+                    pastVisiblesItems =
+                        (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+                    if (loading) {
+                        if (visibleItemCount + pastVisiblesItems >= totalItemCount) {
+                            loading = false
+                            Toast.makeText(context, "Reached the end", Toast.LENGTH_SHORT).show()
+                            loadEverything(true)
+                        }
+                    }
+                }
+            }
+        })
 
         return v
     }
@@ -59,7 +83,7 @@ class EverythingFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
             var list: List<Article> = emptyList()
             try {
-                list = service.getEverything(URLEncoder.encode(params[0], "utf-8"))
+                list = service.getEverything(URLEncoder.encode(params[0], "utf-8"), params[1].toInt())
             } finally {
                 return list
             }
@@ -75,13 +99,14 @@ class EverythingFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                 ).show()
             } else {
                 // save new data
-                ArticleList.everythingList.addAll(result as Collection<Article>)
+                ArticleList.everythingList.addAll(result)
                 val set: MutableSet<Article> = mutableSetOf()
                 // put the data in a set to filter out duplicates
                 set.addAll(ArticleList.everythingList)
                 ArticleList.everythingList.clear()
                 ArticleList.everythingList.addAll(set)
 
+                ArticleList.displayEverythingList.clear()
                 ArticleList.displayEverythingList.addAll(ArticleList.everythingList)
                 everythingFragment.recyclerView?.adapter?.notifyDataSetChanged()
             }
@@ -90,8 +115,15 @@ class EverythingFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         }
     }
 
-    private fun loadEverything(query: String) {
+    private fun loadEverything(loadMore: Boolean) {
+
         swipeRefreshLayout?.isRefreshing = true
-        LoadEverythingTask(this).execute(query)
+        val page: String
+        page = if (loadMore) {
+            (ArticleList.everythingList.size / 20 + 1).toString()
+        } else {
+            "1"
+        }
+        LoadEverythingTask(this).execute("tech", page)
     }
 }

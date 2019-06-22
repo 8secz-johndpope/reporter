@@ -92,6 +92,12 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        searchView?.setOnCloseListener {
+            val recyclerView = findViewById<RecyclerView>(R.id.everything_recyclerView)
+            recyclerView.adapter?.notifyDataSetChanged()
+            false
+        }
+
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -118,9 +124,10 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_LONG
                 ).show()
             } else {
-                ArticleList.everythingList.addAll(result as Collection<Article>)
+                ArticleList.everythingList.addAll(result)
                 ArticleList.displayEverythingList.clear()
-                ArticleList.displayEverythingList.addAll(result as Collection<Article>)
+                ArticleList.displayEverythingList.addAll(ArticleList.everythingList)
+                ArticleList.displayEverythingList.reverse()
 
                 val recyclerView = findViewById<RecyclerView>(R.id.everything_recyclerView)
                 recyclerView.adapter?.notifyDataSetChanged()

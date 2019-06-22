@@ -7,15 +7,16 @@ import retrofit.http.Query
 
 interface ReporterService {
 
-//    @get:Headers("X-Api-Key: fa2b4e8e826d4f578e36848a1e43c2b7")
-//    @get:GET("/top-headlines?country=us&category=business")
-//    val response: Response
-
     @Headers("X-Api-Key: fa2b4e8e826d4f578e36848a1e43c2b7")
     @GET("/top-headlines")
-    fun getTopHeadlines(@Query("country") country: String): Response
+    fun getTopHeadlines(@Query("language") language: String, @Query("page") page: Int): Response
 
     @Headers("X-Api-Key: fa2b4e8e826d4f578e36848a1e43c2b7")
     @GET("/everything")
     fun getEverything(@Query("q") keyword: String): Response
+
+    @Headers("X-Api-Key: fa2b4e8e826d4f578e36848a1e43c2b7")
+    @GET("/everything")
+    fun getEverything(@Query("q") keyword: String, @Query("page") page: Int): Response
+
 }
