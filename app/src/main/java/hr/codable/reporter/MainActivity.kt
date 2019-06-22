@@ -59,14 +59,15 @@ class MainActivity : AppCompatActivity() {
 
                     ArticleList.displayEverythingList.clear()
                     for (article in ArticleList.everythingList) {
-                        if (article.title.contains(newText, true)
-                            || article.description.contains(newText, true)
-                            || article.source.name.contains(newText, true)
-                            || article.author.contains(newText, true)
+                        if (article.title.toString().contains(newText, true)
+                            || article.description.toString().contains(newText, true)
+                            || article.source?.name.toString().contains(newText, true)
+                            || article.author.toString().contains(newText, true)
                         ) {
 
                             ArticleList.displayEverythingList.add(article)
                         }
+
                     }
                     val recyclerView = findViewById<RecyclerView>(R.id.everything_recyclerView)
                     recyclerView.adapter?.notifyDataSetChanged()

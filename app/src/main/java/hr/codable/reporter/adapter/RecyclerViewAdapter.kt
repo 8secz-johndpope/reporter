@@ -48,10 +48,10 @@ class RecyclerViewAdapter constructor(private val displayArticle: List<Article>)
         val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
         parent.articlePublishedAtTextView.text = LocalDate.parse(
             displayArticle[position]
-                .publishedAt.substring(0, 10)
+                .publishedAt?.substring(0, 10)
         ).format(formatter).toString()
         parent.articleTitleTextView.text = displayArticle[position].title
-        parent.articleSourceTextView.text = displayArticle[position].source.name
+        parent.articleSourceTextView.text = displayArticle[position].source?.name
     }
 
     class ViewHolder(itemView: View, context: Context, articles: List<Article>) : RecyclerView.ViewHolder(itemView) {
