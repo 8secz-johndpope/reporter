@@ -23,7 +23,6 @@ class EverythingFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
         loadEverything("tech")
         Log.d("Reporter", "Refresh everything")
-
     }
 
     private var v: View? = null

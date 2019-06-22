@@ -4,6 +4,7 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.view.ViewPager
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -81,10 +82,7 @@ class MainActivity : AppCompatActivity() {
 
                 if (query.isNotBlank()) {
 
-                    SearchInEverythingTask().execute(query)
-                    val tabLayout = findViewById<TabLayout>(R.id.tabLayout_id)
-                    tabLayout.getTabAt(1)?.select()
-
+                    searchInEverything(query)
                     return true
                 }
 
@@ -110,10 +108,22 @@ class MainActivity : AppCompatActivity() {
             ArticleList.displayEverythingList.addAll(result as Collection<Article>)
 
             val recyclerView = findViewById<RecyclerView>(R.id.everything_recyclerView)
+            val swipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.everything_swipeRefreshLayout)
             recyclerView.adapter?.notifyDataSetChanged()
+            swipeRefreshLayout.isRefreshing = false
 
             Log.d("Reporter", "Done searching")
 
         }
+    }
+
+    private fun searchInEverything(query: String) {
+
+        val swipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.everything_swipeRefreshLayout)
+        swipeRefreshLayout.isRefreshing = true
+
+        SearchInEverythingTask().execute(query)
+        val tabLayout = findViewById<TabLayout>(R.id.tabLayout_id)
+        tabLayout.getTabAt(1)?.select()
     }
 }
