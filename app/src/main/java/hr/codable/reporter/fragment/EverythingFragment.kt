@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import hr.codable.reporter.Flag
 import hr.codable.reporter.R
 import hr.codable.reporter.adapter.RecyclerViewAdapter
 import hr.codable.reporter.entity.Article
@@ -20,6 +21,8 @@ import java.lang.ref.WeakReference
 import java.net.URLEncoder
 
 class EverythingFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
+
+    var isLoading = false
 
     override fun onRefresh() {
 
@@ -41,28 +44,26 @@ class EverythingFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
         // when the fragment is created, fetch data from server
         swipeRefreshLayout?.post {
+
             loadEverything(false)
         }
 
-        var loading = true
-        var pastVisiblesItems: Int
-        var visibleItemCount: Int
-        var totalItemCount: Int
-
-        // TODO fix this - it only works once
         recyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (dy > 0) {
-                    visibleItemCount = recyclerView.layoutManager!!.childCount
-                    totalItemCount = recyclerView.layoutManager!!.itemCount
-                    pastVisiblesItems =
-                        (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
-                    if (loading) {
-                        if (visibleItemCount + pastVisiblesItems >= totalItemCount) {
-                            loading = false
-                            Toast.makeText(context, "Reached the end", Toast.LENGTH_SHORT).show()
-                            loadEverything(true)
-                        }
+                super.onScrolled(recyclerView, dx, dy)
+
+                val linearLayoutManager = recyclerView.layoutManager as LinearLayoutManager?
+
+                if (!isLoading) {
+
+                    if (linearLayoutManager?.findLastCompletelyVisibleItemPosition()
+                        == ArticleList.displayEverythingList.size - 1
+                        && !Flag.dynamicSearchActive
+                    ) {
+
+                        loadEverything(true)
+                        isLoading = true
                     }
                 }
             }
@@ -116,6 +117,7 @@ class EverythingFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             val swipeRefreshLayout =
                 fragmentReference?.view?.findViewById<SwipeRefreshLayout>(R.id.everything_swipeRefreshLayout)
             swipeRefreshLayout?.isRefreshing = false
+            fragmentReference?.isLoading = false
         }
     }
 

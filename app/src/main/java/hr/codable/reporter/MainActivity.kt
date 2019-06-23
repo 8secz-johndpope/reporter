@@ -53,6 +53,8 @@ class MainActivity : AppCompatActivity() {
 
                 if (newText.isNotBlank()) {
 
+                    Flag.dynamicSearchActive = true
+
                     ArticleList.displayEverythingList.clear()
                     for (article in ArticleList.everythingList) {
                         if (article.title.toString().contains(newText, true)
@@ -67,11 +69,14 @@ class MainActivity : AppCompatActivity() {
                     }
                     val recyclerView = findViewById<RecyclerView>(R.id.everything_recyclerView)
                     recyclerView.adapter?.notifyDataSetChanged()
+
                     return true
                 } else {
                     ArticleList.displayEverythingList.clear()
                     ArticleList.displayEverythingList.addAll(ArticleList.everythingList)
                 }
+
+                Flag.dynamicSearchActive = false
 
                 return false
             }

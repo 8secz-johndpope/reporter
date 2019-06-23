@@ -20,6 +20,8 @@ import java.lang.ref.WeakReference
 
 class TopHeadlinesFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
+    var isLoading = false
+
     override fun onRefresh() {
 
         loadTopHeadlines(false)
@@ -44,25 +46,21 @@ class TopHeadlinesFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             loadTopHeadlines(false)
         }
 
-        var loading = true
-        var pastVisiblesItems: Int
-        var visibleItemCount: Int
-        var totalItemCount: Int
-
-        // TODO fix this - it only works once
         recyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (dy > 0) {
-                    visibleItemCount = recyclerView.layoutManager!!.childCount
-                    totalItemCount = recyclerView.layoutManager!!.itemCount
-                    pastVisiblesItems =
-                        (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
-                    if (loading) {
-                        if (visibleItemCount + pastVisiblesItems >= totalItemCount) {
-                            loading = false
-                            Toast.makeText(context, "Reached the end", Toast.LENGTH_SHORT).show()
-                            loadTopHeadlines(true)
-                        }
+                super.onScrolled(recyclerView, dx, dy)
+
+                val linearLayoutManager = recyclerView.layoutManager as LinearLayoutManager?
+
+                if (!isLoading) {
+
+                    if (linearLayoutManager?.findLastCompletelyVisibleItemPosition()
+                        == ArticleList.displayTopHeadlinesList.size - 1
+                    ) {
+
+                        loadTopHeadlines(true)
+                        isLoading = true
                     }
                 }
             }
@@ -117,6 +115,7 @@ class TopHeadlinesFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             val swipeRefreshLayout =
                 fragmentReference?.view?.findViewById<SwipeRefreshLayout>(R.id.top_headlines_swipeRefreshLayout)
             swipeRefreshLayout?.isRefreshing = false
+            fragmentReference?.isLoading = false
         }
 
     }
