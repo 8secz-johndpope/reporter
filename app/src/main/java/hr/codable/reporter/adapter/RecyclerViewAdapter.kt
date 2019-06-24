@@ -11,8 +11,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import hr.codable.reporter.R
 import hr.codable.reporter.entity.Article
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -35,22 +37,37 @@ class RecyclerViewAdapter constructor(private val displayArticle: List<Article>)
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(parent: ViewHolder, position: Int) {
 
-        // to suppress warning
-        val author: String? = displayArticle[position].author
-        if (author.isNullOrBlank()) {
-            parent.articleAuthorTextView.text = "Author unknown"
+        val title: String? = displayArticle[position].title
+        if (title.isNullOrBlank()) {
+            parent.articleTitleTextView.text = "Title not found"
         } else {
-            parent.articleAuthorTextView.text = displayArticle[position].author
+            parent.articleTitleTextView.text = title
         }
 
-        val sourceDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH)
-        val dateSource = sourceDateFormat.parse(displayArticle[position].publishedAt?.substring(0, 18))
-        val goalDateFormat = SimpleDateFormat("MMMM dd, yyyy' at 'HH:mm", Locale.ENGLISH)
-        val goalDate = goalDateFormat.format(dateSource)
+        val author: String? = displayArticle[position].author
+        if (author.isNullOrBlank()) {
+            parent.articleAuthorTextView.text = "Author not found"
+        } else {
+            parent.articleAuthorTextView.text = author
+        }
 
-        parent.articlePublishedAtTextView.text = goalDate.toString()
-        parent.articleTitleTextView.text = displayArticle[position].title
-        parent.articleSourceTextView.text = displayArticle[position].source?.name
+        val source: String? = displayArticle[position].source?.name
+        if (source.isNullOrBlank()) {
+            parent.articleSourceTextView.text = "Source not found"
+        } else {
+            parent.articleSourceTextView.text = source
+
+        }
+
+        try {
+            val sourceDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.ENGLISH)
+            val dateSource = sourceDateFormat.parse(displayArticle[position].publishedAt?.substring(0, 15))
+            val goalDateFormat = SimpleDateFormat("MMMM dd, yyyy' at 'HH:mm", Locale.ENGLISH)
+            val goalDate = goalDateFormat.format(dateSource)
+            parent.articlePublishedAtTextView.text = goalDate.toString()
+        } catch (exc: ParseException) {
+            parent.articlePublishedAtTextView.text = "Unparseable date"
+        }
     }
 
     class ViewHolder(itemView: View, context: Context, articles: List<Article>) : RecyclerView.ViewHolder(itemView) {
@@ -65,18 +82,37 @@ class RecyclerViewAdapter constructor(private val displayArticle: List<Article>)
             itemView.setOnClickListener {
 
                 val alertDialog = AlertDialog.Builder(context).create()
-                alertDialog.setTitle(articles[adapterPosition].title)
-                alertDialog.setMessage(articles[adapterPosition].description)
+
+                val title: String? = articles[adapterPosition].title
+                if (title.isNullOrBlank()) {
+                    alertDialog.setTitle("Title not found")
+                } else {
+                    alertDialog.setTitle(title)
+                }
+
+                val description = articles[adapterPosition].description
+                if (description.isNullOrBlank()) {
+                    alertDialog.setMessage("Description not found")
+                } else {
+                    alertDialog.setMessage(description)
+                }
+
                 alertDialog.show()
             }
 
             itemView.setOnLongClickListener {
 
-                val url = Uri.parse(articles[adapterPosition].url)
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.data = url
-                startActivity(context, intent, null)
-                true
+                val uri = articles[adapterPosition].url
+                if (uri.isNullOrBlank()) {
+                    Toast.makeText(context, "No url available", Toast.LENGTH_SHORT).show()
+                    false
+                } else {
+                    val url = Uri.parse(articles[adapterPosition].url)
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    intent.data = url
+                    startActivity(context, intent, null)
+                    true
+                }
             }
         }
 
