@@ -22,6 +22,7 @@ Reporter is an Android application used to browse news articles fetched from New
 ### Displaying
 - single click on an article opens a dialog displaying article title and article description
 - long click on an article opens the full article in a browser
+- on top of the screen you can set how many articles per page you want to fetch
 
 ### Scroll gestures
 - when an article list is pulled down from the top, the first page for default search values is fetched and merged with the existing list
