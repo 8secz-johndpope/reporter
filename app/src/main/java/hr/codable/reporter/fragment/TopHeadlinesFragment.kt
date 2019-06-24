@@ -120,7 +120,7 @@ class TopHeadlinesFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
     }
 
-    private fun loadTopHeadlines(loadMore: Boolean) {
+    fun loadTopHeadlines(loadMore: Boolean) {
 
         val swipeRefreshLayout = view?.findViewById<SwipeRefreshLayout>(R.id.top_headlines_swipeRefreshLayout)
         swipeRefreshLayout?.isRefreshing = true

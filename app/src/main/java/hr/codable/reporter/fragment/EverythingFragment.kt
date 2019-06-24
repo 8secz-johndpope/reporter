@@ -122,7 +122,7 @@ class EverythingFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         }
     }
 
-    private fun loadEverything(loadMore: Boolean) {
+    fun loadEverything(loadMore: Boolean) {
 
         val swipeRefreshLayout = view?.findViewById<SwipeRefreshLayout>(R.id.everything_swipeRefreshLayout)
         swipeRefreshLayout?.isRefreshing = true

@@ -43,6 +43,11 @@ class MainActivity : AppCompatActivity() {
         viewPager?.adapter = viewPagerAdapter
         tabLayout?.setupWithViewPager(viewPager)
 
+        viewPagerAdapter.startUpdate(viewPager)
+        val topHeadlinesFragment = viewPagerAdapter.instantiateItem(viewPager, 0) as TopHeadlinesFragment
+        val everythingFragment = viewPagerAdapter.instantiateItem(viewPager, 1) as EverythingFragment
+        viewPagerAdapter.finishUpdate(viewPager)
+
         articlesPerPage.setOnKeyListener(object : View.OnKeyListener {
 
             override fun onKey(v: View, keyCode: Int, event: KeyEvent): Boolean {
@@ -57,6 +62,8 @@ class MainActivity : AppCompatActivity() {
                         ).show()
                     } else {
                         ArticleList.articlesPerPage = articlesPerPage.text.toString().toInt()
+                        topHeadlinesFragment.loadTopHeadlines(false)
+                        everythingFragment.loadEverything(false)
                     }
                     val imm = v.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     imm.hideSoftInputFromWindow(v.windowToken, 0)
