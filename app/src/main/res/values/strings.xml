@@ -10,4 +10,8 @@
     <string name="source">source</string>
     <string name="author_unknown">Author unknown</string>
     <string name="retrofit_error_exception_toast">Unable to fetch articles - check your Internet connection</string>
+    <string name="articles_per_page">Articles per page:</string>
+    <string name="twenty_to_hundred">20..100</string>
+    <string name="between_twenty_and_hundred_warning">Number of articles per page must be between 20 and 100</string>
+    <string name="default_articles_per_page">20</string>
 </resources>

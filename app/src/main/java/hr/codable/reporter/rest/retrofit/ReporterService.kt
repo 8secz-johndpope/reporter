@@ -10,14 +10,25 @@ interface ReporterService {
 
     @Headers("X-Api-Key: " + APIKey.apiKey)
     @GET("/top-headlines")
-    fun getTopHeadlines(@Query("language") language: String, @Query("page") page: Int): Response
+    fun getTopHeadlines(
+        @Query("language") language: String,
+        @Query("page") page: Int,
+        @Query("pageSize") pageSize: Int
+    ): Response
 
     @Headers("X-Api-Key: " + APIKey.apiKey)
     @GET("/everything")
-    fun getEverything(@Query("q") keyword: String): Response
+    fun getEverything(
+        @Query("q") keyword: String,
+        @Query("pageSize") pageSize: Int
+    ): Response
 
     @Headers("X-Api-Key: " + APIKey.apiKey)
     @GET("/everything")
-    fun getEverything(@Query("q") keyword: String, @Query("page") page: Int): Response
+    fun getEverything(
+        @Query("q") keyword: String,
+        @Query("page") page: Int,
+        @Query("pageSize") pageSize: Int
+    ): Response
 
 }

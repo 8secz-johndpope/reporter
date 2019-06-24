@@ -4,9 +4,9 @@ import hr.codable.reporter.entity.Article
 
 interface RestInterface {
 
-    fun getTopHeadlines(language: String, page: Int): List<Article>
+    fun getTopHeadlines(language: String, page: Int, pageSize: Int): List<Article>
 
-    fun getEverything(keyword: String): List<Article>
+    fun getEverything(keyword: String, pageSize: Int): List<Article>
 
-    fun getEverything(keyword: String, page: Int): List<Article>
+    fun getEverything(keyword: String, page: Int, pageSize: Int): List<Article>
 }

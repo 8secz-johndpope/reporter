@@ -80,7 +80,7 @@ class TopHeadlinesFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
             var list: List<Article> = emptyList()
             try {
-                list = service.getTopHeadlines(params[0], params[1].toInt())
+                list = service.getTopHeadlines(params[0], params[1].toInt(), params[2].toInt())
             } finally {
                 return list
             }
@@ -126,12 +126,12 @@ class TopHeadlinesFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         swipeRefreshLayout?.isRefreshing = true
 
         val page: String = if (loadMore) {
-            (ArticleList.topHeadlinesList.size / 20 + 1).toString()
+            (ArticleList.topHeadlinesList.size / ArticleList.articlesPerPage + 1).toString()
         } else {
             "1"
         }
 
-        LoadTopHeadlinesTask(this).execute("en", page)
+        LoadTopHeadlinesTask(this).execute("en", page, ArticleList.articlesPerPage.toString())
     }
 
 }

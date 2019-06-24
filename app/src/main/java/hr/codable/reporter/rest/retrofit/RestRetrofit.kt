@@ -22,18 +22,18 @@ class RestRetrofit : RestInterface {
         service = retrofit.create(ReporterService::class.java)
     }
 
-    override fun getTopHeadlines(language: String, page: Int): List<Article> {
+    override fun getTopHeadlines(language: String, page: Int, pageSize: Int): List<Article> {
 
-        return service.getTopHeadlines(language, page).articles
+        return service.getTopHeadlines(language, page, pageSize).articles
     }
 
-    override fun getEverything(keyword: String): List<Article> {
+    override fun getEverything(keyword: String, pageSize: Int): List<Article> {
 
-        return service.getEverything(keyword).articles
+        return service.getEverything(keyword, pageSize).articles
     }
 
-    override fun getEverything(keyword: String, page: Int): List<Article> {
+    override fun getEverything(keyword: String, page: Int, pageSize: Int): List<Article> {
 
-        return service.getEverything(keyword, page).articles
+        return service.getEverything(keyword, page, pageSize).articles
     }
 }

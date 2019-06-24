@@ -83,7 +83,8 @@ class EverythingFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
             var list: List<Article> = emptyList()
             try {
-                list = service.getEverything(URLEncoder.encode(params[0], "utf-8"), params[1].toInt())
+                list =
+                    service.getEverything(URLEncoder.encode(params[0], "utf-8"), params[1].toInt(), params[2].toInt())
             } finally {
                 return list
             }
@@ -127,10 +128,10 @@ class EverythingFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         swipeRefreshLayout?.isRefreshing = true
 
         val page: String = if (loadMore) {
-            (ArticleList.everythingList.size / 20 + 1).toString()
+            (ArticleList.everythingList.size / ArticleList.articlesPerPage + 1).toString()
         } else {
             "1"
         }
-        LoadEverythingTask(this).execute("tech", page)
+        LoadEverythingTask(this).execute("tech", page, ArticleList.articlesPerPage.toString())
     }
 }

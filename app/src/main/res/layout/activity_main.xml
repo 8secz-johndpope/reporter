@@ -8,6 +8,40 @@
         tools:context=".MainActivity"
         android:orientation="vertical">
 
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimary">
+
+        <TextView
+                android:text="@string/articles_per_page"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@android:color/white"
+                android:background="@color/colorPrimary"
+                android:textSize="18sp"
+                android:padding="5sp"
+                android:textAlignment="center"/>
+
+        <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:ems="10"
+                android:id="@+id/articles_per_page_id"
+                android:layout_weight="1"
+                android:background="@color/colorPrimary"
+                android:textColor="@android:color/white"
+                android:hint="@string/twenty_to_hundred"
+                android:textSize="18sp"
+                android:textAlignment="center"
+                android:text="@string/default_articles_per_page"
+                android:importantForAutofill="no"
+                tools:targetApi="o"/>
+
+    </LinearLayout>
     <android.support.design.widget.TabLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
