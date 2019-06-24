@@ -7,6 +7,8 @@ Reporter is an Android application used to browse news articles fetched from New
 
 ## Features
 
+**Note:** for testing I used Samsung Galaxy S9+ API 28 as phyisical device, Pixel 2 API 28 and Nexus 4 API 23 as emulators, API level 23 is minimum and API level 28 is target
+
 ### Defaults
 - you can browse 'Top headlines' and 'Everything' endpoints 
 - top headlines are all in English 
