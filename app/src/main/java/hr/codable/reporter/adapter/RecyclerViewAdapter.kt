@@ -5,8 +5,6 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
-import android.support.annotation.RequiresApi
 import android.support.v4.content.ContextCompat.startActivity
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -15,8 +13,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import hr.codable.reporter.R
 import hr.codable.reporter.entity.Article
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class RecyclerViewAdapter constructor(private val displayArticle: List<Article>) :
@@ -34,7 +32,6 @@ class RecyclerViewAdapter constructor(private val displayArticle: List<Article>)
         return displayArticle.size
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(parent: ViewHolder, position: Int) {
 
@@ -43,13 +40,15 @@ class RecyclerViewAdapter constructor(private val displayArticle: List<Article>)
         if (author.isNullOrBlank()) {
             parent.articleAuthorTextView.text = "Author unknown"
         } else {
-            parent.articleAuthorTextView.text = displayArticle.get(position).author
+            parent.articleAuthorTextView.text = displayArticle[position].author
         }
-        val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
-        parent.articlePublishedAtTextView.text = LocalDate.parse(
-            displayArticle[position]
-                .publishedAt?.substring(0, 10)
-        ).format(formatter).toString()
+
+        val sourceDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH)
+        val dateSource = sourceDateFormat.parse(displayArticle[position].publishedAt?.substring(0, 18))
+        val goalDateFormat = SimpleDateFormat("MMMM dd, yyyy' at 'HH:mm", Locale.ENGLISH)
+        val goalDate = goalDateFormat.format(dateSource)
+
+        parent.articlePublishedAtTextView.text = goalDate.toString()
         parent.articleTitleTextView.text = displayArticle[position].title
         parent.articleSourceTextView.text = displayArticle[position].source?.name
     }
